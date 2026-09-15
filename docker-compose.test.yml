@@ -1,0 +1,18 @@
+## Ephemeral Postgres for integration tests. Runs on a separate port so it
+## never collides with the dev docker-compose.yml `db` service.
+services:
+  test_db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: reprox_test
+      POSTGRES_PASSWORD: reprox_test_password
+      POSTGRES_DB: reprox_test
+    ports:
+      - "5433:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reprox_test"]
+      interval: 3s
+      timeout: 3s
+      retries: 20

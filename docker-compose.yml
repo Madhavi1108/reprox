@@ -1,0 +1,22 @@
+## Dev flow: only Postgres runs in Docker. The FastAPI backend runs
+## directly on the host (uvicorn) so it can shell out to `docker run` for
+## the experiment execution sandbox without needing Docker-in-Docker.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-reprox}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-reprox_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-reprox}
+    ports:
+      - "5432:5432"
+    volumes:
+      - reprox_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-reprox}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  reprox_pgdata:
