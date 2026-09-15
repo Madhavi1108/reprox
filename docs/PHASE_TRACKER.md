@@ -20,7 +20,7 @@ is silently dropped).
 | 6 | Environment provenance | **DONE** | `app/provenance/environment.py`: hash over OS/arch/Python/GPU-CUDA(null)/tracked-dependency-versions; hostname/CPU/RAM captured but structurally excluded from the hash. 9 unit tests passing. Full unit suite: 40/40 green. |
 | 7 | Configuration provenance | **DONE** | Canonicalization primitive + config fingerprint + 4 unit tests, all passing. |
 | 8 | Randomness provenance | **DONE** | `app/provenance/randomness.py`: seed capture + determinism classification that never reaches outright `DETERMINISTIC`; declared-but-unbound stochastic params (e.g. unset `random_state`) correctly force `NON_DETERMINISTIC`. 10 unit tests passing. Full unit suite: 50/50 green. |
-| 9 | Artifact provenance | NOT STARTED | Artifact recording (schema exists; capture logic pending — depends on Phase 17 sandbox producing real artifacts). |
+| 9 | Artifact provenance | **DONE** | `app/provenance/artifact.py`: content-hash + type classification for individual files and whole output directories, ready to be pointed at Phase 17's sandbox `/output` once it exists. 11 unit tests passing. Full unit suite: 61/61 green. |
 | 10 | Fingerprint engine | NOT STARTED | Composite fingerprint assembly + versioning (depends on Phases 4–9). |
 | 11 | Experiment comparison | NOT STARTED | Per-category comparators. |
 | 12 | Reproducibility classification | NOT STARTED | Deterministic decision-table classifier. |
