@@ -15,7 +15,7 @@ is silently dropped).
 | 1 | Project foundation | **DONE** | Repo scaffold, docker-compose (Postgres), backend venv, `/health` + `/health/db`, verified live. |
 | 2 | Database | **DONE** | 22-table SQLAlchemy schema, Alembic initial migration applied, FK integrity smoke-tested against real Postgres. |
 | 3 | Experiment domain model | **DONE** | `User`/`Project`/`Experiment`/`ExperimentRun` models (built alongside Phase 2's migration). CRUD API endpoints are **not** built yet — that's part of Phase 19 (FastAPI). |
-| 4 | Git/code provenance | NOT STARTED | Tree fingerprinting, dirty/detached/shallow detection. |
+| 4 | Git/code provenance | **DONE** | `app/provenance/code.py`: tree fingerprint from on-disk content (not commit SHA), dirty/detached-HEAD/shallow-clone/no-repo detection. 8 unit tests passing (real temp git repos), 22/22 total unit suite green. |
 | 5 | Dataset provenance | NOT STARTED | Content hash, schema, stats, multi-level comparison groundwork. |
 | 6 | Environment provenance | NOT STARTED | OS/Python/deps capture + fingerprint. |
 | 7 | Configuration provenance | **DONE** | Canonicalization primitive + config fingerprint + 4 unit tests, all passing. |
