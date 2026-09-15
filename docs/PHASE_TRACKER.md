@@ -19,7 +19,7 @@ is silently dropped).
 | 5 | Dataset provenance | **DONE** | `app/provenance/dataset.py`: streamed content-hash (Level 1), schema (Level 2), per-column stats/duplicates (Level 3 groundwork). Level 4/5 explicitly deferred. 9 unit tests passing, incl. "same row count, different content/hash, same schema, different distribution" and missing/corrupted-file error cases. Full unit suite: 31/31 green. |
 | 6 | Environment provenance | **DONE** | `app/provenance/environment.py`: hash over OS/arch/Python/GPU-CUDA(null)/tracked-dependency-versions; hostname/CPU/RAM captured but structurally excluded from the hash. 9 unit tests passing. Full unit suite: 40/40 green. |
 | 7 | Configuration provenance | **DONE** | Canonicalization primitive + config fingerprint + 4 unit tests, all passing. |
-| 8 | Randomness provenance | NOT STARTED | Seed capture + determinism classification (was about to start when paused). |
+| 8 | Randomness provenance | **DONE** | `app/provenance/randomness.py`: seed capture + determinism classification that never reaches outright `DETERMINISTIC`; declared-but-unbound stochastic params (e.g. unset `random_state`) correctly force `NON_DETERMINISTIC`. 10 unit tests passing. Full unit suite: 50/50 green. |
 | 9 | Artifact provenance | NOT STARTED | Artifact recording (schema exists; capture logic pending — depends on Phase 17 sandbox producing real artifacts). |
 | 10 | Fingerprint engine | NOT STARTED | Composite fingerprint assembly + versioning (depends on Phases 4–9). |
 | 11 | Experiment comparison | NOT STARTED | Per-category comparators. |
