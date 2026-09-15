@@ -21,7 +21,7 @@ is silently dropped).
 | 7 | Configuration provenance | **DONE** | Canonicalization primitive + config fingerprint + 4 unit tests, all passing. |
 | 8 | Randomness provenance | **DONE** | `app/provenance/randomness.py`: seed capture + determinism classification that never reaches outright `DETERMINISTIC`; declared-but-unbound stochastic params (e.g. unset `random_state`) correctly force `NON_DETERMINISTIC`. 10 unit tests passing. Full unit suite: 50/50 green. |
 | 9 | Artifact provenance | **DONE** | `app/provenance/artifact.py`: content-hash + type classification for individual files and whole output directories, ready to be pointed at Phase 17's sandbox `/output` once it exists. 11 unit tests passing. Full unit suite: 61/61 green. |
-| 10 | Fingerprint engine | NOT STARTED | Composite fingerprint assembly + versioning (depends on Phases 4–9). |
+| 10 | Fingerprint engine | **DONE** | `app/fingerprint/composite.py`: composite hash over the 5 category hashes with explicit-null missing-component tracking, versioned (`1.0.0`), never silently recomputed. 10 unit tests passing (incl. real end-to-end assembly from Phases 4-8's actual capture functions). Full unit suite: 71/71 green. `docs/FINGERPRINT_ALGORITHM.md` written. |
 | 11 | Experiment comparison | NOT STARTED | Per-category comparators. |
 | 12 | Reproducibility classification | NOT STARTED | Deterministic decision-table classifier. |
 | 13 | Metric tolerance | NOT STARTED | Abs/rel tolerance module. |
