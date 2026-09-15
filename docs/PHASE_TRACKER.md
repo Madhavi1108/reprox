@@ -16,7 +16,7 @@ is silently dropped).
 | 2 | Database | **DONE** | 22-table SQLAlchemy schema, Alembic initial migration applied, FK integrity smoke-tested against real Postgres. |
 | 3 | Experiment domain model | **DONE** | `User`/`Project`/`Experiment`/`ExperimentRun` models (built alongside Phase 2's migration). CRUD API endpoints are **not** built yet — that's part of Phase 19 (FastAPI). |
 | 4 | Git/code provenance | **DONE** | `app/provenance/code.py`: tree fingerprint from on-disk content (not commit SHA), dirty/detached-HEAD/shallow-clone/no-repo detection. 8 unit tests passing (real temp git repos), 22/22 total unit suite green. |
-| 5 | Dataset provenance | NOT STARTED | Content hash, schema, stats, multi-level comparison groundwork. |
+| 5 | Dataset provenance | **DONE** | `app/provenance/dataset.py`: streamed content-hash (Level 1), schema (Level 2), per-column stats/duplicates (Level 3 groundwork). Level 4/5 explicitly deferred. 9 unit tests passing, incl. "same row count, different content/hash, same schema, different distribution" and missing/corrupted-file error cases. Full unit suite: 31/31 green. |
 | 6 | Environment provenance | NOT STARTED | OS/Python/deps capture + fingerprint. |
 | 7 | Configuration provenance | **DONE** | Canonicalization primitive + config fingerprint + 4 unit tests, all passing. |
 | 8 | Randomness provenance | NOT STARTED | Seed capture + determinism classification (was about to start when paused). |
