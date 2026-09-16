@@ -1,7 +1,25 @@
 from fastapi import APIRouter
 
+from app.api.v1.routers import (
+    comparisons,
+    dashboard,
+    experiments,
+    jobs,
+    lineage,
+    projects,
+    provenance,
+    reproducibility,
+    runs,
+)
+
 api_router = APIRouter()
 
-# Sub-routers are included as each resource is implemented (build order
-# steps 10, 15, 17). Intentionally empty at scaffold time so /health works
-# before any domain endpoints exist.
+api_router.include_router(projects.router)
+api_router.include_router(experiments.router)
+api_router.include_router(runs.router)
+api_router.include_router(comparisons.router)
+api_router.include_router(reproducibility.router)
+api_router.include_router(provenance.router)
+api_router.include_router(lineage.router)
+api_router.include_router(jobs.router)
+api_router.include_router(dashboard.router)

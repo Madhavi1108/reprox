@@ -94,6 +94,10 @@ _STAGE_TO_STATUS: dict[JobStage, JobStatus] = {
 }
 
 
+def stage_to_status(stage: JobStage) -> JobStatus:
+    return _STAGE_TO_STATUS[stage]
+
+
 class InvalidJobTransitionError(Exception):
     pass
 
@@ -154,6 +158,9 @@ class JobTracker:
         if idempotency_key is not None:
             self._idempotency_index[idempotency_key] = job_id
         return job_id
+
+    def list_jobs(self) -> list[JobRecord]:
+        return list(self._jobs.values())
 
     def get(self, job_id: uuid.UUID) -> JobRecord:
         try:

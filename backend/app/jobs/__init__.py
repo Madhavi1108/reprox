@@ -7,6 +7,7 @@ from app.jobs.tracker import (
     JobRecord,
     JobStage,
     JobTracker,
+    stage_to_status,
 )
 
 __all__ = [
@@ -18,4 +19,5 @@ __all__ = [
     "JobRecord",
     "JobStage",
     "JobTracker",
+    "stage_to_status",
 ]
