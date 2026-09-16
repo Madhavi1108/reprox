@@ -1,0 +1,528 @@
+=== page 4 ===
+================================
+============================ 
+REPROX must implement: 
+Experiment 
+    ↓ 
+Execution Capture 
+    ↓ 
+Code Provenance 
+    ↓ 
+Dataset Provenance 
+    ↓ 
+Environment Provenance 
+    ↓ 
+Configuration Provenance 
+    ↓ 
+Randomness Provenance 
+    ↓ 
+Artifact Provenance 
+    ↓ 
+Experiment Fingerprint 
+    ↓ 
+Experiment Lineage 
+    ↓ 
+Reproduction Run 
+    ↓ 
+Difference Detection 
+    ↓ 
+Reproducibility Classification 
+    ↓ 
+Potential Contributor Analysis 
+    ↓ 
+Controlled Investigation 
+    ↓ 
+Evidence Update 
+    ↓ 
+Explainable Diagnosis 
+The central principle is: 
+DO NOT SIMPLY STORE EXPERIMENT METADATA. 
+Instead: 
+BUILD A MACHINE-READABLE PROVENANCE MODEL THAT CAN EXPLAIN 
+EXPERIMENT DIFFERENCES. 
+ 
+================================
+============================ 
+
+=== page 5 ===
+5. PRIMARY USE CASE 
+================================
+============================ 
+A researcher creates an experiment. 
+Example: 
+Project: 
+Image Classification 
+ 
+Dataset: 
+CIFAR-10 
+ 
+Model: 
+ResNet50 
+ 
+Python: 
+3.11 
+ 
+PyTorch: 
+2.5.0 
+ 
+CUDA: 
+12.1 
+ 
+GPU: 
+RTX 4060 
+ 
+Learning Rate: 
+0.001 
+ 
+Batch Size: 
+64 
+ 
+Epochs: 
+50 
+ 
+Seed: 
+42 
+Result: 
+Accuracy: 
+94.27% 
+The experiment is registered by REPROX. 
+Later another run produces: 
+Accuracy: 
+89.74% 
+
+=== page 25 ===
+Environment snapshot 
+ 
+Confidence: 
+HIGH 
+ 
+================================
+============================ 
+28. REPRODUCIBILITY 
+CLASSIFICATION 
+================================
+============================ 
+REPROX must classify reproduction status. 
+Minimum states: 
+EXACTLY_REPRODUCIBLE 
+REPRODUCIBLE_WITHIN_TOLERANCE 
+CONDITIONALLY_REPRODUCIBLE 
+PARTIALLY_REPRODUCIBLE 
+NOT_REPRODUCIBLE 
+INSUFFICIENT_EVIDENCE 
+NOT_COMPARABLE 
+Do not use arbitrary thresholds. 
+Define the mathematical/statistical basis for determining each category. 
+ 
+================================
+============================ 
+29. METRIC TOLERANCE 
+================================
+============================ 
+
+=== page 26 ===
+Exact numerical equality may be inappropriate for some ML metrics. 
+Support configurable tolerances. 
+Examples: 
+absolute tolerance 
+relative tolerance 
+statistical tolerance 
+confidence interval where appropriate 
+Example: 
+Original: 
+94.27% 
+ 
+Reproduction: 
+94.25% 
+May be considered equivalent under a configured tolerance. 
+But: 
+94.27% 
+vs 
+81.43% 
+should be classified differently. 
+The tolerance model must be documented and versioned. 
+ 
+================================
+============================ 
+30. REPRODUCIBILITY SCORE 
+================================
+============================ 
+A reproducibility score may be provided, but it must NOT replace the classification. 
+Separate: 
+REPRODUCIBILITY STATUS 
+
+=== page 34 ===
+================================
+============================ 
+39. EXPERIMENT SIMILARITY 
+================================
+============================ 
+Support semantic and structural similarity between experiments. 
+Examples: 
+Experiment A: 
+ResNet image classification 
+ 
+Experiment B: 
+EfficientNet image classification 
+They may be semantically related. 
+Use: 
+configuration similarity 
+dataset similarity 
+model similarity 
+pipeline similarity 
+environment similarity 
+semantic experiment description 
+Do not claim experiments are equivalent merely because they use the same model. 
+ 
+================================
+============================ 
+40. HISTORICAL EXPERIMENT 
+SEARCH 
+================================
+============================ 
+
+=== page 50 ===
+Select suspected factor 
+↓ 
+Generate controlled experiment 
+↓ 
+Execute 
+↓ 
+Compare 
+↓ 
+Update evidence 
+Never modify the original experiment. 
+Every investigation must create a new run. 
+ 
+================================
+============================ 
+61. REPORT GENERATION 
+================================
+============================ 
+Generate reproducibility reports. 
+Include: 
+1. Experiment 
+2. Original run 
+3. Reproduction run 
+4. Code provenance 
+5. Dataset provenance 
+6. Pipeline provenance 
+7. Environment provenance 
+8. Configuration provenance 
+9. Randomness provenance 
+10. Artifact provenance 
+11. Metric comparison 
+12. Detected differences 
+13. Reproducibility classification 
+14. Potential contributors 
+15. Investigation results 
+16. Limitations 
+17. Evidence references. 
+Never fabricate findings. 
+
+=== page 54 ===
+Experiment G 
+Multiple factors changed. 
+Expected: 
+Multiple differences detected 
+Experiment H 
+Provenance intentionally incomplete. 
+Expected: 
+Insufficient evidence 
+ 
+================================
+============================ 
+65. EV ALUATION METRICS 
+================================
+============================ 
+Measure actual system performance. 
+Minimum: 
+Code Difference Detection Accuracy 
+Dataset Difference Detection Accuracy 
+Environment Difference Detection Accuracy 
+Configuration Difference Detection Accuracy 
+Dependency Difference Detection Accuracy 
+Randomness Difference Detection Accuracy 
+Schema Difference Detection Accuracy 
+Fingerprint Collision Rate 
+Reproducibility Classification Accuracy 
+False Positive Rate 
+False Negative Rate 
+Contributor Ranking Quality 
+Provenance Completeness 
+Query Latency 
+Comparison Latency 
+Storage Overhead 
+Execution Overhead 
+
+=== page 61 ===
+================================
+============================ 
+73. TESTING 
+================================
+============================ 
+Testing is mandatory. 
+Implement: 
+Unit tests 
+For: 
+• fingerprinting 
+• canonicalization 
+• hashing 
+• dataset comparison 
+• schema comparison 
+• dependency comparison 
+• environment comparison 
+• configuration comparison 
+• randomness comparison 
+• reproducibility classification 
+• metric tolerance 
+• contributor ranking. 
+Integration tests 
+Test: 
+API 
++ 
+database 
++ 
+workers 
++ 
+experiment executor 
++ 
+provenance engine 
+Security tests 
+
+=== page 66 ===
+docs/CONTRIBUTOR_ANALYSIS.md 
+docs/COUNTERFACTUAL_ENGINE.md 
+docs/EXPERIMENT_EXECUTION.md 
+docs/SECURITY_MODEL.md 
+docs/PRIVACY_MODEL.md 
+docs/API.md 
+docs/EVALUATION_PLAN.md 
+docs/BENCHMARK.md 
+docs/MVP.md 
+docs/EDGE_CASES.md 
+docs/TESTING.md 
+docs/DEPLOYMENT.md 
+ 
+================================
+============================ 
+80. PHASE 0 — ARCHITECTURE & 
+PLANNING 
+================================
+============================ 
+Before significant implementation: 
+Inspect the workspace. 
+Then create the documentation listed above. 
+Phase 0 MUST explicitly define: 
+1. system architecture 
+2. database architecture 
+3. experiment model 
+4. provenance model 
+5. fingerprint algorithm 
+6. dataset fingerprinting 
+7. code fingerprinting 
+8. environment fingerprinting 
+9. configuration fingerprinting 
+10. randomness model 
+11. artifact model 
+12. comparison algorithm 
+13. reproducibility classification 
+14. metric tolerance 
+15. contributor analysis 
+
+=== page 69 ===
+PHASE 4 
+Git/code provenance 
+PHASE 5 
+Dataset provenance 
+PHASE 6 
+Environment provenance 
+PHASE 7 
+Configuration provenance 
+PHASE 8 
+Randomness provenance 
+PHASE 9 
+Artifact provenance 
+PHASE 10 
+Fingerprint engine 
+PHASE 11 
+Experiment comparison 
+PHASE 12 
+Reproducibility classification 
+PHASE 13 
+Metric tolerance 
+PHASE 14 
+Contributor analysis 
+PHASE 15 
+Experiment lineage 
+
+=== page 71 ===
+PHASE 28 
+Benchmarking 
+PHASE 29 
+Security hardening 
+PHASE 30 
+Performance optimization 
+PHASE 31 
+End-to-end testing 
+PHASE 32 
+Documentation. 
+ 
+================================
+============================ 
+83. ACCEPTANCE TEST — CORE 
+SCENARIO 
+================================
+============================ 
+Create: 
+Project: 
+Image Classification 
+ 
+Original Experiment: 
+EXP-001 
+ 
+Reproduction: 
+EXP-002 
+Original: 
+Python 3.11 
+
+=== page 77 ===
+RULE 8: 
+Observed differences must remain distinct from causal conclusions. 
+RULE 9: 
+Every important conclusion must reference evidence. 
+RULE 10: 
+Every fingerprint algorithm must be deterministic and versioned. 
+RULE 11: 
+Every major scoring/classification algorithm must be documented. 
+RULE 12: 
+Missing provenance must result in uncertainty, not invented values. 
+RULE 13: 
+Do not treat identical filenames as identical datasets. 
+RULE 14: 
+Do not treat identical model names as identical experiments. 
+RULE 15: 
+Do not assume fixed random seeds guarantee perfect reproducibility. 
+RULE 16: 
+Do not execute untrusted experiment code directly on the host. 
+RULE 17: 
+Do not expose secrets. 
+RULE 18: 
+Do not allow experiment content to perform prompt injection. 
+RULE 19: 
+Do not create decorative graphs with no reasoning purpose. 
+RULE 20: 
+
+=== page 80 ===
+3. reproducibility classification 
+4. evidence-based contributor analysis 
+5. controlled counterfactual investigation 
+6. experiment lineage graph 
+7. reproducibility benchmark. 
+Do not claim novelty automatically. 
+The actual research novelty must be established through literature review and 
+experimentation. 
+ 
+================================
+============================ 
+92. EXPERIMENTAL EV ALUATION 
+================================
+============================ 
+Perform controlled experiments. 
+Test: 
+Code drift 
+Dataset drift 
+Schema drift 
+Dependency drift 
+Environment drift 
+Configuration drift 
+Randomness drift 
+Hardware drift 
+Multiple simultaneous drifts 
+Missing provenance 
+Measure: 
+Detection precision 
+Detection recall 
+False positives 
+False negatives 
+Classification accuracy 
+Contributor ranking quality 
+Fingerprint stability 
+Runtime overhead 
+Storage overhead 
+
+=== page 86 ===
+================================
+============================ 
+REPROX is complete only if: 
+1. Projects can be created. 
+2. Experiments can be created. 
+3. Experiment runs can be executed. 
+4. Code provenance can be captured. 
+5. Dataset provenance can be captured. 
+6. Data split provenance can be captured. 
+7. Pipeline provenance can be captured. 
+8. Environment provenance can be captured. 
+9. Dependency provenance can be captured. 
+10. Hardware provenance can be captured. 
+11. Configuration provenance can be captured. 
+12. Randomness provenance can be captured. 
+13. Artifacts can be tracked. 
+14. Metrics can be tracked. 
+15. Fingerprints can be generated. 
+16. Fingerprints are deterministic. 
+17. Experiments can be compared. 
+18. Differences can be detected. 
+19. Reproducibility can be classified. 
+20. Metric tolerance can be applied. 
+21. Missing evidence is handled. 
+22. Contributor analysis works. 
+23. Experiment lineage works. 
+24. Provenance graph works. 
+25. Controlled investigations work. 
+26. Counterfactual experiments work. 
+27. AI explanations are evidence-backed. 
+28. Natural-language experiment search works. 
+29. API works. 
+30. Frontend works. 
+31. Excel reporting works. 
+32. Jobs work asynchronously. 
+33. Experiment execution is sandboxed. 
+34. Security tests pass. 
+35. E2E tests pass. 
+36. Benchmark experiments execute successfully. 
+37. Evaluation metrics are calculated from actual results. 
+38. Performance measurements are actual. 
+39. Docker deployment works. 
+40. Documentation is complete. 
+41. No fake production functionality exists. 
+ 
+
+=== page 88 ===
+WHAT REMAINS UNKNOWN? 
+ 
+WHAT CONTROLLED EXPERIMENT SHOULD BE RUN NEXT? 
+ 
+WHY DID REPROX REACH THIS CONCLUSION? 
+Every answer must be traceable to actual experiment provenance. 
+Every important metric must have an explicit algorithm. 
+Every important classification must be reproducible. 
+Every AI explanation must be grounded in evidence. 
+Every experiment must have a provenance trail. 
+Every investigation must produce an actual new execution. 
+Every counterfactual must be isolated from the original experiment. 
+Do not optimize for writing code quickly. 
+Optimize for producing the largest amount of genuinely working, tested, integrated, secure, 
+reproducible, scientifically defensible functionality within the available project scope. 
+ 
+================================
+============================ 
+101. START NOW 
+================================
+============================ 
+FIRST: 
+Perform: 
+PHASE 0 — GREENFIELD 
+ARCHITECTURE & PLANNING 
+Inspect the current workspace. 
+
