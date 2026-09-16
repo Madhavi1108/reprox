@@ -53,7 +53,7 @@ def test_all_categories_identical_are_same(tmp_path: Path):
     assert result.environment_status == ComparisonStatus.SAME
     assert result.configuration_status == ComparisonStatus.SAME
     assert result.randomness_status == ComparisonStatus.SAME
-    assert result.metrics_status == ComparisonStatus.UNKNOWN
+    assert result.metrics_status == ComparisonStatus.NOT_COMPARABLE
     assert result.differences == []
 
 
@@ -146,7 +146,7 @@ def test_assemble_comparison_links_differences_and_defaults_contributor_flag(tmp
         assert difference.is_potential_contributor is False
 
 
-def test_metrics_status_is_always_unknown(tmp_path: Path):
+def test_metrics_status_is_not_comparable_when_absent_on_both_sides(tmp_path: Path):
     base_dir = tmp_path / "base"
     compare_dir = tmp_path / "compare"
     base_dir.mkdir()
@@ -168,4 +168,47 @@ def test_metrics_status_is_always_unknown(tmp_path: Path):
         compare_randomness=compare["randomness"],
     )
 
-    assert result.metrics_status == ComparisonStatus.UNKNOWN
+    assert result.metrics_status == ComparisonStatus.NOT_COMPARABLE
+
+
+def test_real_metrics_flow_through_to_metrics_status(tmp_path: Path):
+    base_dir = tmp_path / "base"
+    compare_dir = tmp_path / "compare"
+    base_dir.mkdir()
+    compare_dir.mkdir()
+
+    base = _capture_all(base_dir, "x,y\n1,2\n3,4\n", {"model": "logreg"}, seed=1)
+    compare = _capture_all(compare_dir, "x,y\n1,2\n3,4\n", {"model": "logreg"}, seed=1)
+
+    exact_match = compare_experiments(
+        base_code=base["code"],
+        compare_code=compare["code"],
+        base_dataset=base["dataset"],
+        compare_dataset=compare["dataset"],
+        base_environment=base["environment"],
+        compare_environment=compare["environment"],
+        base_configuration=base["configuration"],
+        compare_configuration=compare["configuration"],
+        base_randomness=base["randomness"],
+        compare_randomness=compare["randomness"],
+        base_metrics={"accuracy": 0.9427},
+        compare_metrics={"accuracy": 0.9427},
+    )
+    assert exact_match.metrics_status == ComparisonStatus.SAME
+
+    mismatch = compare_experiments(
+        base_code=base["code"],
+        compare_code=compare["code"],
+        base_dataset=base["dataset"],
+        compare_dataset=compare["dataset"],
+        base_environment=base["environment"],
+        compare_environment=compare["environment"],
+        base_configuration=base["configuration"],
+        compare_configuration=compare["configuration"],
+        base_randomness=base["randomness"],
+        compare_randomness=compare["randomness"],
+        base_metrics={"accuracy": 0.9427},
+        compare_metrics={"accuracy": 0.8143},
+    )
+    assert mismatch.metrics_status == ComparisonStatus.DIFFERENT
+    assert any(d.field == "metrics.accuracy" for d in mismatch.differences)

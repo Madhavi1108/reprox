@@ -1,13 +1,18 @@
 """Experiment comparison orchestrator (Phase 11, spec section 22-23).
 
-Runs each of the 5 per-category comparators and assembles their results
+Runs each of the 6 per-category comparators and assembles their results
 into a single `ComparisonResult`, then - separately - into unattached
 `ExperimentComparison`/`Difference` ORM instances. No DB session is
 touched here (no `session.add`/`commit`): wiring persistence to an actual
 request is Phase 19's job (FastAPI), not this phase's.
 
-`metrics_status` is always `ComparisonStatus.UNKNOWN` - real metric
-comparison needs abs/rel tolerance, which is Phase 13's job. Similarly,
+`metrics_status` comes from the Phase 13 tolerance comparator
+(`category_comparators/metrics.py`). No `ExperimentRun` column captures
+metric values yet, so `base_metrics`/`compare_metrics` default to `None`
+- callers without real metrics get `NOT_COMPARABLE`, same as any other
+category with no evidence on either side, until a later phase wires in
+real captured metrics.
+
 `Difference.is_potential_contributor` is always `False` here; ranking
 which differences actually explain a reproducibility failure is Phase 14
 (REDUCED SCOPE, deferred) - `False` reads as "not yet assessed," not "not
@@ -23,6 +28,7 @@ from app.comparison.category_comparators.code import compare_code as _compare_co
 from app.comparison.category_comparators.configuration import compare_configuration as _compare_configuration
 from app.comparison.category_comparators.dataset import compare_dataset as _compare_dataset
 from app.comparison.category_comparators.environment import compare_environment as _compare_environment
+from app.comparison.category_comparators.metrics import ToleranceConfig, compare_metrics as _compare_metrics
 from app.comparison.category_comparators.randomness import compare_randomness as _compare_randomness
 from app.comparison.difference import RawDifference
 from app.db.models.comparison import Difference, ExperimentComparison
@@ -62,6 +68,9 @@ def compare_experiments(
     compare_configuration: ConfigurationProvenance | None,
     base_randomness: RandomnessProvenance | None,
     compare_randomness: RandomnessProvenance | None,
+    base_metrics: dict[str, float] | None = None,
+    compare_metrics: dict[str, float] | None = None,
+    metrics_tolerance: ToleranceConfig = ToleranceConfig(),
     base_run_id: uuid.UUID | None = None,
     compare_run_id: uuid.UUID | None = None,
     comparison_algorithm_version: str = COMPARISON_ALGORITHM_VERSION,
@@ -71,6 +80,7 @@ def compare_experiments(
     environment_result = _compare_environment(base_environment, compare_environment)
     configuration_result = _compare_configuration(base_configuration, compare_configuration)
     randomness_result = _compare_randomness(base_randomness, compare_randomness)
+    metrics_result = _compare_metrics(base_metrics, compare_metrics, metrics_tolerance)
 
     differences = (
         code_result.differences
@@ -78,6 +88,7 @@ def compare_experiments(
         + environment_result.differences
         + configuration_result.differences
         + randomness_result.differences
+        + metrics_result.differences
     )
 
     return ComparisonResult(
@@ -88,7 +99,7 @@ def compare_experiments(
         environment_status=environment_result.status,
         configuration_status=configuration_result.status,
         randomness_status=randomness_result.status,
-        metrics_status=ComparisonStatus.UNKNOWN,
+        metrics_status=metrics_result.status,
         comparison_algorithm_version=comparison_algorithm_version,
         differences=differences,
     )
