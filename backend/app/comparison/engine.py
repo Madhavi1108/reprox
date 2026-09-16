@@ -13,16 +13,23 @@ metric values yet, so `base_metrics`/`compare_metrics` default to `None`
 category with no evidence on either side, until a later phase wires in
 real captured metrics.
 
-`Difference.is_potential_contributor` is always `False` here; ranking
-which differences actually explain a reproducibility failure is Phase 14
-(REDUCED SCOPE, deferred) - `False` reads as "not yet assessed," not "not
-a contributor."
+`Difference.is_potential_contributor` defaults to `False` here unless an
+optional `ranking` (Phase 14's `ContributorRankingResult`, from
+`app.contributor.ranking.rank_contributors`) is passed to
+`assemble_comparison` - see docs/CONTRIBUTOR_ANALYSIS.md. Wiring an
+actual ranking through end-to-end (comparison -> classification ->
+ranking -> assembly) is Phase 19's job (FastAPI); this module only
+accepts the result if the caller already has one.
 """
 
 from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.contributor.ranking import ContributorRankingResult
 
 from app.comparison.category_comparators.code import compare_code as _compare_code
 from app.comparison.category_comparators.configuration import compare_configuration as _compare_configuration
@@ -105,13 +112,21 @@ def compare_experiments(
     )
 
 
-def assemble_comparison(result: ComparisonResult) -> tuple[ExperimentComparison, list[Difference]]:
+def assemble_comparison(
+    result: ComparisonResult, ranking: ContributorRankingResult | None = None
+) -> tuple[ExperimentComparison, list[Difference]]:
     """Build unattached ORM instances from a `ComparisonResult`. The caller
     is responsible for `session.add()`/`commit()` once a DB session exists
     (Phase 19). `comparison.id` is generated eagerly here (rather than
     relying on the column's `default=uuid.uuid4`, which only runs at flush
     time) so the `Difference` rows below can reference it as their FK
-    before anything is ever flushed."""
+    before anything is ever flushed.
+
+    `ranking` is Phase 14's `ContributorRankingResult`
+    (`app.contributor.ranking.rank_contributors`), whose `ranked_differences`
+    is in the same order as `result.differences` - each row's
+    `is_potential_contributor` is taken from the matching `RankedDifference`
+    when given, else defaults to `False` (unchanged from Phase 11)."""
     comparison = ExperimentComparison(
         id=uuid.uuid4(),
         base_run_id=result.base_run_id,
@@ -123,6 +138,12 @@ def assemble_comparison(result: ComparisonResult) -> tuple[ExperimentComparison,
         randomness_status=result.randomness_status,
         metrics_status=result.metrics_status,
         comparison_algorithm_version=result.comparison_algorithm_version,
+    )
+
+    contributor_flags = (
+        [ranked.is_potential_contributor for ranked in ranking.ranked_differences]
+        if ranking is not None
+        else [False] * len(result.differences)
     )
 
     differences = [
@@ -137,9 +158,9 @@ def assemble_comparison(result: ComparisonResult) -> tuple[ExperimentComparison,
             evidence_source=raw.evidence_source,
             severity=raw.severity,
             confidence=raw.confidence,
-            is_potential_contributor=False,
+            is_potential_contributor=is_contributor,
         )
-        for raw in result.differences
+        for raw, is_contributor in zip(result.differences, contributor_flags)
     ]
 
     return comparison, differences

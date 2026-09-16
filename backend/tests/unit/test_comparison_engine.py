@@ -1,7 +1,8 @@
 from pathlib import Path
 
 from app.comparison.engine import COMPARISON_ALGORITHM_VERSION, assemble_comparison, compare_experiments
-from app.db.models.enums import ComparisonStatus
+from app.contributor.ranking import rank_contributors
+from app.db.models.enums import ComparisonStatus, ReproducibilityClassification
 from app.provenance.code import capture_code_provenance
 from app.provenance.configuration import capture_configuration_provenance
 from app.provenance.dataset import capture_dataset_provenance
@@ -212,3 +213,39 @@ def test_real_metrics_flow_through_to_metrics_status(tmp_path: Path):
     )
     assert mismatch.metrics_status == ComparisonStatus.DIFFERENT
     assert any(d.field == "metrics.accuracy" for d in mismatch.differences)
+
+
+def test_assemble_comparison_applies_contributor_ranking_when_given(tmp_path: Path):
+    base_dir = tmp_path / "base"
+    compare_dir = tmp_path / "compare"
+    base_dir.mkdir()
+    compare_dir.mkdir()
+
+    base = _capture_all(base_dir, "x,y\n1,2\n3,4\n", {"model": "logreg", "C": 1.0}, seed=42)
+    compare = _capture_all(compare_dir, "x,y\n1,2\n3,5\n", {"model": "logreg", "C": 2.0}, seed=42)
+
+    result = compare_experiments(
+        base_code=base["code"],
+        compare_code=compare["code"],
+        base_dataset=base["dataset"],
+        compare_dataset=compare["dataset"],
+        base_environment=base["environment"],
+        compare_environment=compare["environment"],
+        base_configuration=base["configuration"],
+        compare_configuration=compare["configuration"],
+        base_randomness=base["randomness"],
+        compare_randomness=compare["randomness"],
+    )
+    assert result.differences, "fixture must actually produce differences to rank"
+
+    ranking = rank_contributors(result, ReproducibilityClassification.NOT_REPRODUCIBLE)
+    comparison, differences = assemble_comparison(result, ranking=ranking)
+
+    assert len(differences) == len(ranking.ranked_differences)
+    for difference, ranked in zip(differences, ranking.ranked_differences):
+        assert difference.is_potential_contributor == ranked.is_potential_contributor
+    assert any(d.is_potential_contributor for d in differences)
+
+    # Omitting `ranking` still defaults every row to False (unchanged from Phase 11).
+    _, differences_without_ranking = assemble_comparison(result)
+    assert all(d.is_potential_contributor is False for d in differences_without_ranking)
