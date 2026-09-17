@@ -10,6 +10,22 @@ predicates - adequate here because the point under test is *how many
 times* `db.query()` is called, not SQL correctness, and every fixture row
 returned by a given model is already the row the corresponding filter
 would have matched.
+
+IMPORTANT LIMITATION, found the hard way: this fake cannot detect an
+N+1 caused by lazily-loaded ORM *relationship* access (e.g.
+`comparison.differences`), because `_comparison()`'s fixtures are
+`MagicMock` objects - `.differences` is just an auto-created mock
+attribute, never a real SQLAlchemy `InstrumentedAttribute` that would
+trigger a lazy-load query on first access. `_reports_for_comparisons`
+had exactly this bug (`generate_report()` reads `comparison.differences`,
+lazy-loaded with no `selectinload`) even after Phase 30's fix - this test
+suite stayed green throughout because `db.query()` call count (what this
+fake measures) was never affected, only the real per-comparison SQL
+round-trip count was. Found and fixed against a real Postgres instance in
+a later hardening pass - see docs/PERFORMANCE_OPTIMIZATION.md and
+docs/BACKEND_TEST_REPORT.md. This mock is kept for what it's actually
+good at (catching `db.query()`-call-count regressions); it is not a
+substitute for the real-engine verification that caught this one.
 """
 
 import uuid
@@ -32,6 +48,9 @@ class _CountingQuery:
         return self
 
     def filter_by(self, **kwargs):
+        return self
+
+    def options(self, *args, **kwargs):
         return self
 
     def one_or_none(self):

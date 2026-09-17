@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 class ExperimentCreate(BaseModel):
     project_id: uuid.UUID
     name: str = Field(min_length=1, max_length=200)
-    description: str | None = None
+    description: str | None = Field(default=None, max_length=5000)
     workload_type: str = Field(default="sklearn_tabular", max_length=50)
     entrypoint_script: str = Field(min_length=1, max_length=300)
 

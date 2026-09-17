@@ -39,7 +39,7 @@ import json
 import uuid
 
 from openpyxl import Workbook
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.db.models.comparison import Difference, ExperimentComparison, ReproducibilityAssessment
 from app.db.models.core import Experiment, ExperimentRun
@@ -369,10 +369,25 @@ def _lineage_edges_for_experiments(db: Session) -> list[tuple[uuid.UUID, Lineage
 
 
 def _reports_for_comparisons(db: Session) -> list[tuple[ExperimentComparison, object]]:
-    """Bulk-fetches runs/experiments/assessments once instead of once per
-    comparison (Phase 30 perf fix - see docs/PERFORMANCE_OPTIMIZATION.md):
-    4 queries total regardless of comparison count, down from `1 + 4N`."""
-    comparisons = db.query(ExperimentComparison).all()
+    """Bulk-fetches runs/experiments/assessments/differences once instead
+    of once per comparison (Phase 30 perf fix - see
+    docs/PERFORMANCE_OPTIMIZATION.md): 5 queries total regardless of
+    comparison count, down from `1 + 4N` (+ a real, previously-missed
+    lazy-load per comparison - see below).
+
+    `selectinload(differences)` is required, not optional: Phase 30's
+    fix eliminated the explicit per-comparison queries but missed that
+    `generate_report()` reads `comparison.differences` - a lazily-loaded
+    ORM relationship with no explicit `lazy=` override
+    (`app/db/models/comparison.py`) - which issues its own SELECT *per
+    comparison* on first access. Found live against real Postgres in a
+    Phase-33-style hardening pass (the Phase 30 regression test's mocked
+    `Session` double doesn't model relationship lazy-loading at all, so
+    it couldn't have caught this): 11 comparisons produced 15 real SQL
+    statements (4 fixed + 11 lazy-loads), not 4. `selectinload` folds
+    that into one additional bulk query, restoring the fixed-query-count
+    guarantee for real."""
+    comparisons = db.query(ExperimentComparison).options(selectinload(ExperimentComparison.differences)).all()
 
     run_ids = {c.base_run_id for c in comparisons} | {c.compare_run_id for c in comparisons}
     runs_by_id = {r.id: r for r in db.query(ExperimentRun).filter(ExperimentRun.id.in_(run_ids)).all()} if run_ids else {}

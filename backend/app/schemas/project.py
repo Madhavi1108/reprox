@@ -12,7 +12,7 @@ _SLUG_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 class ProjectCreate(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     slug: str = Field(min_length=1, max_length=220)
-    description: str | None = None
+    description: str | None = Field(default=None, max_length=5000)
 
     @field_validator("slug")
     @classmethod
