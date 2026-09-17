@@ -1,0 +1,41 @@
+from app.ai.explainer import (
+    AI_EXPLAINER_VERSION,
+    EvidenceItem,
+    ExplanationResult,
+    ExplanationStatus,
+    build_evidence_bundle,
+    explain_comparison,
+)
+from app.ai.provider import (
+    AI_PROVIDER_VERSION,
+    AIProvider,
+    AIProviderConfig,
+    AIProviderError,
+    AIProviderNotConfiguredError,
+    AIRequest,
+    AIResponse,
+    ClaudeProvider,
+    NullProvider,
+    OpenAIProvider,
+    get_ai_provider,
+)
+
+__all__ = [
+    "AI_EXPLAINER_VERSION",
+    "AI_PROVIDER_VERSION",
+    "AIProvider",
+    "AIProviderConfig",
+    "AIProviderError",
+    "AIProviderNotConfiguredError",
+    "AIRequest",
+    "AIResponse",
+    "ClaudeProvider",
+    "EvidenceItem",
+    "ExplanationResult",
+    "ExplanationStatus",
+    "NullProvider",
+    "OpenAIProvider",
+    "build_evidence_bundle",
+    "explain_comparison",
+    "get_ai_provider",
+]

@@ -37,6 +37,7 @@ EXPECTED_ROUTES = {
     ("GET", "/api/v1/investigations/{investigation_id}"),
     ("POST", "/api/v1/counterfactuals"),
     ("GET", "/api/v1/counterfactuals/{counterfactual_id}"),
+    ("POST", "/api/v1/comparisons/{comparison_id}/explain"),
 }
 
 

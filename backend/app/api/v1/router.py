@@ -5,6 +5,7 @@ from app.api.v1.routers import (
     counterfactuals,
     dashboard,
     experiments,
+    explanations,
     investigations,
     jobs,
     lineage,
@@ -27,3 +28,4 @@ api_router.include_router(jobs.router)
 api_router.include_router(dashboard.router)
 api_router.include_router(investigations.router)
 api_router.include_router(counterfactuals.router)
+api_router.include_router(explanations.router)
