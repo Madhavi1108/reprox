@@ -47,42 +47,66 @@ export function ExperimentsPage() {
       <form onSubmit={handleSubmit} className="space-y-3 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-sm font-semibold text-slate-900">New Experiment</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <select
-            required
-            value={projectId}
-            onChange={(e) => setProjectId(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
-          >
-            <option value="" disabled>
-              {projects.length === 0 ? "No projects yet - create one first" : "Select a project"}
-            </option>
-            {projects.map((project) => (
-              <option key={project.id} value={project.id}>
-                {project.name}
+          <div>
+            <label htmlFor="experiment-project" className="mb-1 block text-xs font-medium text-slate-600">
+              Project
+            </label>
+            <select
+              id="experiment-project"
+              required
+              value={projectId}
+              onChange={(e) => setProjectId(e.target.value)}
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            >
+              <option value="" disabled>
+                {projects.length === 0 ? "No projects yet - create one first" : "Select a project"}
               </option>
-            ))}
-          </select>
-          <input
-            required
-            placeholder="Experiment name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
-          />
-          <input
-            required
-            placeholder="Workload type"
-            value={workloadType}
-            onChange={(e) => setWorkloadType(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
-          />
-          <input
-            required
-            placeholder="Entrypoint script"
-            value={entrypointScript}
-            onChange={(e) => setEntrypointScript(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
-          />
+              {projects.map((project) => (
+                <option key={project.id} value={project.id}>
+                  {project.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="experiment-name" className="mb-1 block text-xs font-medium text-slate-600">
+              Experiment name
+            </label>
+            <input
+              id="experiment-name"
+              required
+              placeholder="Experiment name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label htmlFor="experiment-workload-type" className="mb-1 block text-xs font-medium text-slate-600">
+              Workload type
+            </label>
+            <input
+              id="experiment-workload-type"
+              required
+              placeholder="Workload type"
+              value={workloadType}
+              onChange={(e) => setWorkloadType(e.target.value)}
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label htmlFor="experiment-entrypoint" className="mb-1 block text-xs font-medium text-slate-600">
+              Entrypoint script
+            </label>
+            <input
+              id="experiment-entrypoint"
+              required
+              placeholder="Entrypoint script"
+              value={entrypointScript}
+              onChange={(e) => setEntrypointScript(e.target.value)}
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            />
+          </div>
         </div>
         {formError && <p className="text-sm text-red-600">{formError}</p>}
         <button

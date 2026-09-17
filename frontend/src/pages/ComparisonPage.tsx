@@ -71,20 +71,32 @@ export function ComparisonPage() {
 
       <form onSubmit={handleSubmit} className="space-y-3 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
         <div className="grid gap-3 sm:grid-cols-2">
-          <input
-            required
-            placeholder="Base run ID (ORIGINAL)"
-            value={baseRunId}
-            onChange={(e) => setBaseRunId(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
-          />
-          <input
-            required
-            placeholder="Compare run ID (REPRODUCTION)"
-            value={compareRunId}
-            onChange={(e) => setCompareRunId(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
-          />
+          <div>
+            <label htmlFor="base-run-id" className="mb-1 block text-xs font-medium text-slate-600">
+              Base run ID (ORIGINAL)
+            </label>
+            <input
+              id="base-run-id"
+              required
+              placeholder="Base run ID (ORIGINAL)"
+              value={baseRunId}
+              onChange={(e) => setBaseRunId(e.target.value)}
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label htmlFor="compare-run-id" className="mb-1 block text-xs font-medium text-slate-600">
+              Compare run ID (REPRODUCTION)
+            </label>
+            <input
+              id="compare-run-id"
+              required
+              placeholder="Compare run ID (REPRODUCTION)"
+              value={compareRunId}
+              onChange={(e) => setCompareRunId(e.target.value)}
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            />
+          </div>
         </div>
 
         <button

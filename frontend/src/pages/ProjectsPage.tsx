@@ -39,27 +39,45 @@ export function ProjectsPage() {
       <form onSubmit={handleSubmit} className="space-y-3 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-sm font-semibold text-slate-900">New Project</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <input
-            required
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
-          />
-          <input
-            required
-            placeholder="slug-like-this"
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          <div>
+            <label htmlFor="project-name" className="mb-1 block text-xs font-medium text-slate-600">
+              Name
+            </label>
+            <input
+              id="project-name"
+              required
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label htmlFor="project-slug" className="mb-1 block text-xs font-medium text-slate-600">
+              Slug
+            </label>
+            <input
+              id="project-slug"
+              required
+              placeholder="slug-like-this"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            />
+          </div>
+        </div>
+        <div>
+          <label htmlFor="project-description" className="mb-1 block text-xs font-medium text-slate-600">
+            Description
+          </label>
+          <textarea
+            id="project-description"
+            placeholder="Description (optional)"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
           />
         </div>
-        <textarea
-          placeholder="Description (optional)"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
-        />
         {formError && <p className="text-sm text-red-600">{formError}</p>}
         <button
           type="submit"

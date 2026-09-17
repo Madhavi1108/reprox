@@ -71,6 +71,15 @@ export interface ApiErrorBody {
   };
 }
 
+// FastAPI's own native validation-error shape (emitted directly by
+// Pydantic/FastAPI for request-schema violations - e.g. a failing
+// field_validator like ProjectCreate's slug pattern - distinct from
+// app/core/errors.py's ReproxError handler, which only wraps
+// application-raised errors like NotFoundError/ConflictError).
+export interface FastApiValidationErrorBody {
+  detail: Array<{ loc: (string | number)[]; msg: string; type: string }>;
+}
+
 export type ComparisonStatus = "SAME" | "DIFFERENT" | "UNKNOWN" | "PARTIALLY_MATCHING" | "NOT_COMPARABLE";
 
 export type DifferenceCategory = "CODE" | "DATASET" | "ENVIRONMENT" | "CONFIGURATION" | "RANDOMNESS" | "METRICS";

@@ -11,9 +11,9 @@ export function Layout() {
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-5xl items-center gap-6 px-6 py-4">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-2 px-6 py-4">
           <span className="text-lg font-semibold text-slate-900">REPROX</span>
-          <nav className="flex gap-4">
+          <nav className="flex flex-wrap gap-4">
             {NAV_ITEMS.map((item) => (
               <NavLink
                 key={item.to}

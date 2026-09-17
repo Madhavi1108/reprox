@@ -5,6 +5,7 @@ import type {
   Dashboard,
   Experiment,
   ExperimentCreate,
+  FastApiValidationErrorBody,
   Page,
   Project,
   ProjectCreate,
@@ -36,14 +37,31 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   if (!response.ok) {
-    let body: ApiErrorBody | null = null;
+    let body: ApiErrorBody | FastApiValidationErrorBody | null = null;
     try {
       body = await response.json();
     } catch {
       // response wasn't JSON - fall through to the generic error below
     }
-    if (body?.error) {
+    if (body && "error" in body) {
       throw new ApiError(body.error.code, body.error.message, body.error.details);
+    }
+    // FastAPI's own native validation-error shape (Pydantic field_validator
+    // failures, missing/malformed fields) never goes through
+    // app/core/errors.py's ReproxError handler, so it doesn't have the
+    // {error:{code,message,details}} shape above - without this branch,
+    // every one of these (a very common case - it's what a mistyped slug,
+    // missing required field, etc. actually returns) fell through to a
+    // useless "Request failed with status 422" with the real reason
+    // discarded, on every form in the app.
+    if (body && "detail" in body && Array.isArray(body.detail)) {
+      const message = body.detail
+        .map((issue) => {
+          const field = issue.loc.filter((part) => part !== "body").join(".");
+          return field ? `${field}: ${issue.msg}` : issue.msg;
+        })
+        .join("; ");
+      throw new ApiError("validation_error", message || `Request failed with status ${response.status}`, {});
     }
     throw new ApiError("http_error", `Request failed with status ${response.status}`, {});
   }
