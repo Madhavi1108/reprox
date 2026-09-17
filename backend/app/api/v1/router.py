@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from app.api.v1.routers import (
     comparisons,
+    counterfactuals,
     dashboard,
     experiments,
     investigations,
@@ -25,3 +26,4 @@ api_router.include_router(lineage.router)
 api_router.include_router(jobs.router)
 api_router.include_router(dashboard.router)
 api_router.include_router(investigations.router)
+api_router.include_router(counterfactuals.router)

@@ -56,7 +56,7 @@ class MetricsComparisonResult:
     differences: list[RawDifference] = field(default_factory=list)
 
 
-def _within_tolerance(old: float, new: float, abs_tolerance: float, rel_tolerance: float) -> bool:
+def within_tolerance(old: float, new: float, abs_tolerance: float, rel_tolerance: float) -> bool:
     return abs(old - new) <= max(abs_tolerance, rel_tolerance * max(abs(old), abs(new)))
 
 
@@ -126,7 +126,7 @@ def compare_metrics(
             continue
 
         abs_tolerance, rel_tolerance = tolerance.tolerance_for(name)
-        if _within_tolerance(old_value, new_value, abs_tolerance, rel_tolerance):
+        if within_tolerance(old_value, new_value, abs_tolerance, rel_tolerance):
             has_within_tolerance = True
             severity = Severity.LOW
         else:

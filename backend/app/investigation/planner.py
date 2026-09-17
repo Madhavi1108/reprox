@@ -93,23 +93,38 @@ def _tie_break_key(diff: ContributorDifference) -> tuple:
     )
 
 
+def select_contributor(differences: list[ContributorDifference]) -> ContributorDifference | None:
+    """Picks the single highest-evidence-strength potential contributor,
+    using the same deterministic tie-break as Phase 14's ranking (severity
+    desc, confidence desc, category, field). Shared by investigation-plan
+    generation (Phase 22) and counterfactual-plan generation (Phase 23) -
+    one selection algorithm, not two copies of it."""
+    candidates = [
+        d for d in differences if d.is_potential_contributor and d.category in _CONTROLLABLE_CATEGORIES
+    ]
+    if not candidates:
+        return None
+    return min(candidates, key=_tie_break_key)
+
+
+def held_constant_categories(changed_category: DifferenceCategory) -> list[DifferenceCategory]:
+    return sorted(
+        (category for category in _CONTROLLABLE_CATEGORIES if category != changed_category),
+        key=lambda c: c.value,
+    )
+
+
 def generate_investigation_plan(
     comparison_id: uuid.UUID,
     base_run_id: uuid.UUID,
     compare_run_id: uuid.UUID,
     differences: list[ContributorDifference],
 ) -> InvestigationPlan | None:
-    candidates = [
-        d for d in differences if d.is_potential_contributor and d.category in _CONTROLLABLE_CATEGORIES
-    ]
-    if not candidates:
+    chosen = select_contributor(differences)
+    if chosen is None:
         return None
 
-    chosen = min(candidates, key=_tie_break_key)
-    held_constant = sorted(
-        (category for category in _CONTROLLABLE_CATEGORIES if category != chosen.category),
-        key=lambda c: c.value,
-    )
+    held_constant = held_constant_categories(chosen.category)
 
     return InvestigationPlan(
         id=uuid.uuid4(),
