@@ -1,11 +1,14 @@
 import type {
   ApiErrorBody,
+  Comparison,
+  CompareRequest,
   Dashboard,
   Experiment,
   ExperimentCreate,
   Page,
   Project,
   ProjectCreate,
+  Reproducibility,
 } from "./types";
 
 const API_BASE = "/api/v1";
@@ -66,4 +69,16 @@ export function listExperiments(limit = 20, offset = 0): Promise<Page<Experiment
 
 export function createExperiment(payload: ExperimentCreate): Promise<Experiment> {
   return request<Experiment>("/experiments", { method: "POST", body: JSON.stringify(payload) });
+}
+
+export function compareRuns(runId: string, payload: CompareRequest): Promise<Comparison> {
+  return request<Comparison>(`/runs/${runId}/compare`, { method: "POST", body: JSON.stringify(payload) });
+}
+
+export function getComparison(comparisonId: string): Promise<Comparison> {
+  return request<Comparison>(`/comparisons/${comparisonId}`);
+}
+
+export function getReproducibility(comparisonId: string): Promise<Reproducibility> {
+  return request<Reproducibility>(`/reproducibility/${comparisonId}`);
 }

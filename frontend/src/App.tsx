@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { Layout } from "./components/Layout";
+import { ComparisonPage } from "./pages/ComparisonPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { ExperimentsPage } from "./pages/ExperimentsPage";
 import { ProjectsPage } from "./pages/ProjectsPage";
@@ -11,6 +12,7 @@ export function App() {
         <Route path="/" element={<DashboardPage />} />
         <Route path="/projects" element={<ProjectsPage />} />
         <Route path="/experiments" element={<ExperimentsPage />} />
+        <Route path="/compare" element={<ComparisonPage />} />
       </Route>
     </Routes>
   );

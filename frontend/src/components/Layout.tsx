@@ -4,6 +4,7 @@ const NAV_ITEMS = [
   { to: "/", label: "Dashboard", end: true },
   { to: "/projects", label: "Projects" },
   { to: "/experiments", label: "Experiments" },
+  { to: "/compare", label: "Compare" },
 ];
 
 export function Layout() {
