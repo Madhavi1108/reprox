@@ -38,6 +38,7 @@ EXPECTED_ROUTES = {
     ("POST", "/api/v1/counterfactuals"),
     ("GET", "/api/v1/counterfactuals/{counterfactual_id}"),
     ("POST", "/api/v1/comparisons/{comparison_id}/explain"),
+    ("GET", "/api/v1/search"),
 }
 
 
@@ -86,4 +87,13 @@ def test_invalid_project_slug_is_rejected_by_schema_validation():
         response = client.post("/api/v1/projects", json={"name": "Test", "slug": "Not A Valid Slug!"})
     finally:
         app.dependency_overrides.pop(get_current_user_id, None)
+    assert response.status_code == 422
+
+
+def test_search_without_query_param_is_rejected_by_schema_validation():
+    # Missing `q` fails FastAPI's own Query(..., min_length=1) validation
+    # before the endpoint body (and its DB queries) ever runs, so this is
+    # safely testable without a reachable Postgres, same reasoning as
+    # test_invalid_project_slug_is_rejected_by_schema_validation above.
+    response = client.get("/api/v1/search")
     assert response.status_code == 422

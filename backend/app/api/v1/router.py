@@ -13,6 +13,7 @@ from app.api.v1.routers import (
     provenance,
     reproducibility,
     runs,
+    search,
 )
 
 api_router = APIRouter()
@@ -29,3 +30,4 @@ api_router.include_router(dashboard.router)
 api_router.include_router(investigations.router)
 api_router.include_router(counterfactuals.router)
 api_router.include_router(explanations.router)
+api_router.include_router(search.router)
