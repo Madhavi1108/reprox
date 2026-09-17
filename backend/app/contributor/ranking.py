@@ -67,7 +67,7 @@ _CONFIDENCE_GATE = {
 }
 
 
-def _evidence_strength(severity: Severity, confidence: Confidence) -> EvidenceStrength:
+def evidence_strength(severity: Severity, confidence: Confidence) -> EvidenceStrength:
     severity_tier = _SEVERITY_TIER[severity]
     confidence_gate = _CONFIDENCE_GATE[confidence]
     return min(severity_tier, confidence_gate, key=lambda tier: _TIER_ORDER[tier])
@@ -121,7 +121,7 @@ def rank_contributors(
                 RankedDifference(
                     difference=diff,
                     is_potential_contributor=True,
-                    evidence_strength=_evidence_strength(diff.severity, diff.confidence),
+                    evidence_strength=evidence_strength(diff.severity, diff.confidence),
                     rank=ranks[i],
                 )
             )

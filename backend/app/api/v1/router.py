@@ -4,6 +4,7 @@ from app.api.v1.routers import (
     comparisons,
     dashboard,
     experiments,
+    investigations,
     jobs,
     lineage,
     projects,
@@ -23,3 +24,4 @@ api_router.include_router(provenance.router)
 api_router.include_router(lineage.router)
 api_router.include_router(jobs.router)
 api_router.include_router(dashboard.router)
+api_router.include_router(investigations.router)

@@ -3,6 +3,7 @@ from app.contributor.ranking import (
     ContributorRankingResult,
     EvidenceStrength,
     RankedDifference,
+    evidence_strength,
     rank_contributors,
 )
 
@@ -11,5 +12,6 @@ __all__ = [
     "ContributorRankingResult",
     "EvidenceStrength",
     "RankedDifference",
+    "evidence_strength",
     "rank_contributors",
 ]
