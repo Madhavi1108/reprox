@@ -158,6 +158,9 @@ class InvestigationStore:
     def get(self, investigation_id: uuid.UUID) -> InvestigationPlan | None:
         return self._plans.get(investigation_id)
 
+    def list_all(self) -> list[InvestigationPlan]:
+        return list(self._plans.values())
+
 
 @lru_cache
 def get_investigation_store() -> InvestigationStore:

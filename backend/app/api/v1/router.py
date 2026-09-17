@@ -6,6 +6,7 @@ from app.api.v1.routers import (
     dashboard,
     experiments,
     explanations,
+    exports,
     investigations,
     jobs,
     lineage,
@@ -33,3 +34,4 @@ api_router.include_router(counterfactuals.router)
 api_router.include_router(explanations.router)
 api_router.include_router(search.router)
 api_router.include_router(reports.router)
+api_router.include_router(exports.router)

@@ -2,7 +2,7 @@ import uuid
 from dataclasses import dataclass
 
 from app.db.models.enums import Confidence, DifferenceCategory, Severity
-from app.investigation.planner import generate_investigation_plan
+from app.investigation.planner import InvestigationStore, generate_investigation_plan
 
 
 @dataclass(frozen=True)
@@ -120,3 +120,16 @@ def test_plan_ids_and_references_are_set():
     assert plan.compare_run_id == compare_run_id
     assert isinstance(plan.id, uuid.UUID)
     assert plan.created_at is not None
+
+
+def test_store_list_all_returns_every_created_plan():
+    comparison_id, base_run_id, compare_run_id = _ids()
+    differences = [
+        _Diff(DifferenceCategory.CODE, "files.train.py", "aaa", "bbb", Severity.HIGH, Confidence.HIGH),
+    ]
+    plan = generate_investigation_plan(comparison_id, base_run_id, compare_run_id, differences)
+
+    store = InvestigationStore()
+    assert store.list_all() == []
+    store.create(plan)
+    assert store.list_all() == [plan]

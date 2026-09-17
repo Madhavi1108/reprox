@@ -3,7 +3,12 @@ from dataclasses import dataclass
 
 from app.comparison.category_comparators.metrics import ToleranceConfig
 from app.db.models.enums import Confidence, DifferenceCategory, Severity
-from app.investigation.counterfactual import CounterfactualOutcome, evaluate_counterfactual_result, generate_counterfactual_plan
+from app.investigation.counterfactual import (
+    CounterfactualOutcome,
+    CounterfactualStore,
+    evaluate_counterfactual_result,
+    generate_counterfactual_plan,
+)
 
 TOLERANCE = ToleranceConfig(default_abs_tolerance=0.5)
 
@@ -101,3 +106,16 @@ def test_evaluate_exact_match_to_original_supports():
 def test_evaluate_exact_match_to_reproduction_does_not_support():
     outcome = evaluate_counterfactual_result(original_value=100.0, reproduction_value=50.0, counterfactual_value=50.0)
     assert outcome == CounterfactualOutcome.DOES_NOT_SUPPORT
+
+
+def test_store_list_all_returns_every_created_plan():
+    comparison_id, base_run_id, compare_run_id = _ids()
+    differences = [
+        _Diff(DifferenceCategory.ENVIRONMENT, "dependencies.torch", "2.5", "2.6", Severity.HIGH, Confidence.MEDIUM),
+    ]
+    plan = generate_counterfactual_plan(comparison_id, base_run_id, compare_run_id, differences)
+
+    store = CounterfactualStore()
+    assert store.list_all() == []
+    store.create(plan)
+    assert store.list_all() == [plan]

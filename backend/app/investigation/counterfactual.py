@@ -135,6 +135,9 @@ class CounterfactualStore:
     def get(self, counterfactual_id: uuid.UUID) -> CounterfactualPlan | None:
         return self._plans.get(counterfactual_id)
 
+    def list_all(self) -> list[CounterfactualPlan]:
+        return list(self._plans.values())
+
 
 @lru_cache
 def get_counterfactual_store() -> CounterfactualStore:
