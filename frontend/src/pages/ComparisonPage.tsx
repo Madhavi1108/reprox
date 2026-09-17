@@ -110,10 +110,11 @@ export function ComparisonPage() {
         {showAdvanced && (
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-500">
+              <label htmlFor="base-provenance-json" className="mb-1 block text-xs font-medium text-slate-500">
                 Base provenance JSON (code/dataset/environment/configuration/randomness/metrics)
               </label>
               <textarea
+                id="base-provenance-json"
                 rows={6}
                 placeholder='{"metrics": {"accuracy": 0.94}}'
                 value={baseProvenanceText}
@@ -122,8 +123,11 @@ export function ComparisonPage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-500">Compare provenance JSON</label>
+              <label htmlFor="compare-provenance-json" className="mb-1 block text-xs font-medium text-slate-500">
+                Compare provenance JSON
+              </label>
               <textarea
+                id="compare-provenance-json"
                 rows={6}
                 placeholder='{"metrics": {"accuracy": 0.81}}'
                 value={compareProvenanceText}
