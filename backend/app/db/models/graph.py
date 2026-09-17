@@ -21,7 +21,7 @@ class ProvenanceNode(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     run_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("experiment_runs.id", ondelete="CASCADE")
+        UUID(as_uuid=True), ForeignKey("experiment_runs.id", ondelete="CASCADE"), index=True
     )
     node_type: Mapped[str] = mapped_column(String(50))
     ref_table: Mapped[str] = mapped_column(String(100))
@@ -34,10 +34,10 @@ class ProvenanceEdge(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     from_node_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("provenance_nodes.id", ondelete="CASCADE")
+        UUID(as_uuid=True), ForeignKey("provenance_nodes.id", ondelete="CASCADE"), index=True
     )
     to_node_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("provenance_nodes.id", ondelete="CASCADE")
+        UUID(as_uuid=True), ForeignKey("provenance_nodes.id", ondelete="CASCADE"), index=True
     )
     edge_type: Mapped[str] = mapped_column(String(50))
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())

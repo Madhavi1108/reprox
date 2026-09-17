@@ -335,19 +335,31 @@ def _report_to_dict(report) -> dict:
 
 
 def _lineage_edges_for_experiments(db: Session) -> list[tuple[uuid.UUID, LineageEdge]]:
+    """Bulk-fetches runs/comparisons once instead of once per experiment
+    (Phase 30 perf fix - see docs/PERFORMANCE_OPTIMIZATION.md): 3 queries
+    total regardless of experiment count, down from `1 + 2N`."""
     experiments = db.query(Experiment).all()
+    all_runs = db.query(ExperimentRun).all()
+    all_comparisons = db.query(ExperimentComparison).all()
+
+    runs_by_experiment: dict[uuid.UUID, list[ExperimentRun]] = {}
+    run_experiment_id: dict[uuid.UUID, uuid.UUID] = {}
+    for run in all_runs:
+        runs_by_experiment.setdefault(run.experiment_id, []).append(run)
+        run_experiment_id[run.id] = run.experiment_id
+
+    comparisons_by_experiment: dict[uuid.UUID, list[ExperimentComparison]] = {}
+    for comparison in all_comparisons:
+        base_experiment_id = run_experiment_id.get(comparison.base_run_id)
+        compare_experiment_id = run_experiment_id.get(comparison.compare_run_id)
+        if base_experiment_id is not None and base_experiment_id == compare_experiment_id:
+            comparisons_by_experiment.setdefault(base_experiment_id, []).append(comparison)
+
     edges_by_experiment: list[tuple[uuid.UUID, LineageEdge]] = []
     for experiment in experiments:
-        sibling_runs = db.query(ExperimentRun).filter(ExperimentRun.experiment_id == experiment.id).all()
+        sibling_runs = runs_by_experiment.get(experiment.id, [])
         run_nodes = [RunNode(run_id=r.id, parent_run_id=r.parent_run_id, run_type=r.run_type) for r in sibling_runs]
-        run_ids = [r.id for r in sibling_runs]
-        comparisons = (
-            db.query(ExperimentComparison)
-            .filter(ExperimentComparison.base_run_id.in_(run_ids), ExperimentComparison.compare_run_id.in_(run_ids))
-            .all()
-            if run_ids
-            else []
-        )
+        comparisons = comparisons_by_experiment.get(experiment.id, [])
         comparison_links = [
             ComparisonLink(base_run_id=c.base_run_id, compare_run_id=c.compare_run_id) for c in comparisons
         ]
@@ -357,15 +369,37 @@ def _lineage_edges_for_experiments(db: Session) -> list[tuple[uuid.UUID, Lineage
 
 
 def _reports_for_comparisons(db: Session) -> list[tuple[ExperimentComparison, object]]:
+    """Bulk-fetches runs/experiments/assessments once instead of once per
+    comparison (Phase 30 perf fix - see docs/PERFORMANCE_OPTIMIZATION.md):
+    4 queries total regardless of comparison count, down from `1 + 4N`."""
     comparisons = db.query(ExperimentComparison).all()
+
+    run_ids = {c.base_run_id for c in comparisons} | {c.compare_run_id for c in comparisons}
+    runs_by_id = {r.id: r for r in db.query(ExperimentRun).filter(ExperimentRun.id.in_(run_ids)).all()} if run_ids else {}
+
+    experiment_ids = {r.experiment_id for r in runs_by_id.values()}
+    experiments_by_id = (
+        {e.id: e for e in db.query(Experiment).filter(Experiment.id.in_(experiment_ids)).all()} if experiment_ids else {}
+    )
+
+    comparison_ids = [c.id for c in comparisons]
+    assessments_by_comparison_id = (
+        {
+            a.comparison_id: a
+            for a in db.query(ReproducibilityAssessment)
+            .filter(ReproducibilityAssessment.comparison_id.in_(comparison_ids))
+            .all()
+        }
+        if comparison_ids
+        else {}
+    )
+
     results: list[tuple[ExperimentComparison, object]] = []
     for comparison in comparisons:
-        original_run = db.get(ExperimentRun, comparison.base_run_id)
-        reproduction_run = db.get(ExperimentRun, comparison.compare_run_id)
-        experiment = db.get(Experiment, original_run.experiment_id)
-        reproducibility = (
-            db.query(ReproducibilityAssessment).filter_by(comparison_id=comparison.id).one_or_none()
-        )
+        original_run = runs_by_id[comparison.base_run_id]
+        reproduction_run = runs_by_id[comparison.compare_run_id]
+        experiment = experiments_by_id[original_run.experiment_id]
+        reproducibility = assessments_by_comparison_id.get(comparison.id)
         report = generate_report(
             comparison=comparison,
             experiment=experiment,

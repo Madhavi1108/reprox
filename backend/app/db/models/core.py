@@ -39,7 +39,7 @@ class Experiment(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     project_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("projects.id", ondelete="RESTRICT")
+        UUID(as_uuid=True), ForeignKey("projects.id", ondelete="RESTRICT"), index=True
     )
     name: Mapped[str] = mapped_column(String(200))
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -57,7 +57,7 @@ class ExperimentRun(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     experiment_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("experiments.id", ondelete="CASCADE")
+        UUID(as_uuid=True), ForeignKey("experiments.id", ondelete="CASCADE"), index=True
     )
     run_type: Mapped[RunType] = mapped_column(default=RunType.ORIGINAL)
     parent_run_id: Mapped[uuid.UUID | None] = mapped_column(

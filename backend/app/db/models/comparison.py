@@ -25,10 +25,10 @@ class ExperimentComparison(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     base_run_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("experiment_runs.id", ondelete="CASCADE")
+        UUID(as_uuid=True), ForeignKey("experiment_runs.id", ondelete="CASCADE"), index=True
     )
     compare_run_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("experiment_runs.id", ondelete="CASCADE")
+        UUID(as_uuid=True), ForeignKey("experiment_runs.id", ondelete="CASCADE"), index=True
     )
     code_status: Mapped[ComparisonStatus] = mapped_column(default=ComparisonStatus.UNKNOWN)
     dataset_status: Mapped[ComparisonStatus] = mapped_column(default=ComparisonStatus.UNKNOWN)
@@ -50,7 +50,7 @@ class Difference(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     comparison_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("experiment_comparisons.id", ondelete="CASCADE")
+        UUID(as_uuid=True), ForeignKey("experiment_comparisons.id", ondelete="CASCADE"), index=True
     )
     category: Mapped[DifferenceCategory] = mapped_column()
     field: Mapped[str] = mapped_column(String(300))
